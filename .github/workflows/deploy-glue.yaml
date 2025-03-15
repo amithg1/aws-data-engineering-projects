@@ -30,9 +30,17 @@ jobs:
     #   # 4️⃣ Start AWS Glue Job
     #   - name: Start AWS Glue Job
     #     run: |
-    #       aws glue start-job-run --job-name glue-etl-job
+    #       JOB_RUN_ID=$(aws glue start-job-run --job-name glue-etl-job --query 'JobRunId' --output text)
+    #       echo "GLUE_JOB_RUN_ID=$JOB_RUN_ID" >> $GITHUB_ENV
 
     #   # 5️⃣ Notify on Failure
     #   - name: Notify on Failure
     #     if: failure()
     #     run: echo "AWS Glue job execution failed!"
+
+    #   # 8️⃣ Fetch AWS Glue Job Logs from CloudWatch
+    #   - name: Fetch Glue Logs
+    #   run: |
+    #     sleep 30  # Wait for logs to be available
+    #     LOG_GROUP_NAME="/aws-glue/jobs/glue-etl-job"
+    #     aws logs filter-log-events --log-group-name $LOG_GROUP_NAME --limit 10
